@@ -97,11 +97,4 @@ defmodule Hubsolution do
     IO.puts "Running: " <> command
     System.cmd(command)
   end
-  
-  # githup reply:
-  # [[repo1], [repo2], [repo3]]
-  # where repoN looks like:
-  # {"id", "123589"}, {"foo", "bar}, ...
-  # ->
-  # [id: "123455", foo: "bar]
 end
