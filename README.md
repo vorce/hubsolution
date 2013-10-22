@@ -22,5 +22,6 @@ By default Hubsolution does not include forks.
 
 ## TODO
 
-Add config
+- Add config
+- Instead of Jsex, use https://github.com/cblage/elixir-json
 
