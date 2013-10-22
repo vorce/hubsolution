@@ -1,7 +1,9 @@
 defmodule Hubsolution do
   use HTTPotion.Base
+  #Application.Behavior
+  # http://elixir-lang.org/docs/stable/Application.Behaviour.html
 
-  @root_dir "hubsolution_repos"
+  @root_dir "hubsolution_repos" # change me
 
   defrecord Repo,
     owner: "",
@@ -37,9 +39,9 @@ defmodule Hubsolution do
   """
   def repos(user) do
     Enum.map(get("/users/" <> user <> "/repos").body,
-              fn(c) -> string_to_atom(c) end)
+              &string_to_atom(&1))
     |>
-    Enum.map fn(r) -> raw_to_repo(r) end
+    Enum.map &raw_to_repo(&1)
   end
 
   defp string_to_atom(contents) do
@@ -71,15 +73,14 @@ defmodule Hubsolution do
     end
   end
 
-  # Can't just clone here. Must force pull or something.
-  def do_backup(into_dir, ssh_url) do
+  defp do_backup(into_dir, ssh_url) do
     cond do
       File.dir? into_dir -> update(into_dir)
       true -> clone(into_dir, ssh_url)
     end
   end
 
-  def update(into_dir) do
+  defp update(into_dir) do
     cwd = File.cwd!
     File.cd! into_dir
     run_git_command([@git_fetch, @git_fetch_flags])
@@ -87,14 +88,22 @@ defmodule Hubsolution do
     File.cd! cwd
   end
 
-  def clone(into_dir, ssh_url) do
+  defp clone(into_dir, ssh_url) do
     run_git_command([@git_clone, @git_clone_flags, ssh_url, into_dir])
   end
 
-  def run_git_command(cmd) do
+  defp run_git_command(cmd) do
     git = System.find_executable(@git_command)
     command = Enum.join [git | cmd], " "
-    IO.puts "Running: " <> command
+    IO.puts "Running: [" <> command <> "] in: " <> File.cwd!
     System.cmd(command)
+  end
+
+  def is_fork?(repo) do
+    repo.fork
+  end
+
+  def backup_skip_forks(user) do
+    Hubsolution.repos(user) |> Enum.reject(&is_fork?(&1)) |> Hubsolution.backup
   end
 end

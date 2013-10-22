@@ -11,6 +11,10 @@ defmodule HubsolutionTest do
             ssh_url: "git@github.com:test/HelloWorld.git",
             fork: false]
 
+  setup_all do
+    Hubsolution.start
+  end
+
   setup do
     File.rm_rf("hubsolution_repos")
   end
@@ -19,11 +23,9 @@ defmodule HubsolutionTest do
     File.rm_rf("hubsolution_repos")
   end
 
-  # Acceptance test
   # Note! This test requires an internet connection where you can
   # access https://api.github.com/users/test/repos
   test "Should be able to list user's repositories" do
-    Hubsolution.start
     reply = Hubsolution.repos("test")
     assert length(reply) > 0,
       "Empty list of repos on github for user 'test'"
@@ -47,7 +49,6 @@ defmodule HubsolutionTest do
     assert Hubsolution.extract_owner_name(@rawrepo[:owner]) == "test"
   end
 
-  # Acceptance test
   test "Should clone non-existing repos locally" do
     Hubsolution.repos("test") |> Hubsolution.backup
     assert File.dir?("hubsolution_repos"),
@@ -59,5 +60,10 @@ defmodule HubsolutionTest do
     Hubsolution.backup([repo])
     assert File.dir?("hubsolution_repos/test/HelloWorld/.git"),
       "Expected dir 'hubsolution_repos/test/HelloWorld/.git' to exist"
+  end
+
+  test "Should detect forked repos" do
+    repo = Hubsolution.raw_to_repo(@rawrepo)
+    assert Hubsolution.is_fork?(repo) == false
   end
 end
