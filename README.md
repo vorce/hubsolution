@@ -1,6 +1,7 @@
 # Hubsolution
 
 Hubsolution backs up / copies a specified Github user's repositories.
+By default Hubsolution does not include forks.
 
 
 ## Requires
@@ -18,4 +19,8 @@ Hubsolution backs up / copies a specified Github user's repositories.
 
 - HTTPotion: https://github.com/myfreeweb/httpotion.git
 - Jsex: https://github.com/talentdeficit/jsex.git
+
+## TODO
+
+Add config
 
