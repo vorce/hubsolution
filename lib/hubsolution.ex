@@ -17,7 +17,7 @@ defmodule Hubsolution do
 
   @git_command "git"
   @git_clone "clone"
-  @git_clone_flags "--mirror --recursive"
+  @git_clone_flags "--recursive" # could add --mirror here if wanted
 
   @git_fetch "fetch"
   @git_fetch_flags "--all"

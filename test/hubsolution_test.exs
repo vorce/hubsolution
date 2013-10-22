@@ -1,5 +1,5 @@
 defmodule HubsolutionTest do
-  use ExUnit.Case, async: true
+  use ExUnit.Case#, async: true
 
   alias Hubsolution.Repo, as: Repo
 
@@ -10,6 +10,14 @@ defmodule HubsolutionTest do
             updated_at: "2013-08-18T15:55:36Z",
             ssh_url: "git@github.com:test/HelloWorld.git",
             fork: false]
+
+  setup do
+    File.rm_rf("hubsolution_repos")
+  end
+
+  teardown do
+    File.rm_rf("hubsolution_repos")
+  end
 
   # Acceptance test
   # Note! This test requires an internet connection where you can
@@ -41,7 +49,6 @@ defmodule HubsolutionTest do
 
   # Acceptance test
   test "Should clone non-existing repos locally" do
-    File.rm_rf("hubsolution_repos")
     Hubsolution.repos("test") |> Hubsolution.backup
     assert File.dir?("hubsolution_repos"),
       "'hubsolution_repos' dir wasn't created"
@@ -49,7 +56,6 @@ defmodule HubsolutionTest do
 
   test "Should clone test repo" do
     repo = Hubsolution.raw_to_repo(@rawrepo)
-    File.rm_rf("hubsolution_repos")
     Hubsolution.backup([repo])
     assert File.dir?("hubsolution_repos/test/HelloWorld/.git"),
       "Expected dir 'hubsolution_repos/test/HelloWorld/.git' to exist"
