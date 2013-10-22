@@ -43,7 +43,15 @@ defmodule HubsolutionTest do
   test "Should clone non-existing repos locally" do
     File.rm_rf("hubsolution_repos")
     Hubsolution.repos("test") |> Hubsolution.backup
-    assert File.dir? "hubsolution_repos",
+    assert File.dir?("hubsolution_repos"),
       "'hubsolution_repos' dir wasn't created"
+  end
+
+  test "Should clone test repo" do
+    repo = Hubsolution.raw_to_repo(@rawrepo)
+    File.rm_rf("hubsolution_repos")
+    Hubsolution.backup([repo])
+    assert File.dir?("hubsolution_repos/test/HelloWorld/.git"),
+      "Expected dir 'hubsolution_repos/test/HelloWorld/.git' to exist"
   end
 end

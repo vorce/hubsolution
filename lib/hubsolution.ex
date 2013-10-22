@@ -1,6 +1,8 @@
 defmodule Hubsolution do
   use HTTPotion.Base
 
+  @root_dir "hubsolution_repos"
+
   defrecord Repo,
     owner: "",
     name: "",
@@ -12,6 +14,15 @@ defmodule Hubsolution do
 
   @github_api_url "https://api.github.com"
   @github_owner_tag "login"
+
+  @git_command "git"
+  @git_clone "clone"
+  @git_clone_flags "--mirror --recursive"
+
+  @git_fetch "fetch"
+  @git_fetch_flags "--all"
+  @git_reset "reset"
+  @git_reset_flags "--hard origin/master"
 
   def process_url(url) do
     @github_api_url <> url
@@ -48,6 +59,43 @@ defmodule Hubsolution do
 
   def list_user_repos(user) do
     repos(user) |> IO.inspect
+  end
+
+  @doc """
+    Clones repos in the list, the paths will be:
+      <hubsolution root dir>/<repo owner>/<repo name>
+  """
+  def backup(repos) do
+    Enum.each repos, fn(repo) ->
+      Path.join([@root_dir, repo.owner, repo.name]) |> do_backup repo.ssh_url
+    end
+  end
+
+  # Can't just clone here. Must force pull or something.
+  def do_backup(into_dir, ssh_url) do
+    cond do
+      File.dir? into_dir -> update(into_dir)
+      true -> clone(into_dir, ssh_url)
+    end
+  end
+
+  def update(into_dir) do
+    cwd = File.cwd!
+    File.cd! into_dir
+    run_git_command([@git_fetch, @git_fetch_flags])
+    run_git_command([@git_reset, @git_reset_flags])
+    File.cd! cwd
+  end
+
+  def clone(into_dir, ssh_url) do
+    run_git_command([@git_clone, @git_clone_flags, ssh_url, into_dir])
+  end
+
+  def run_git_command(cmd) do
+    git = System.find_executable(@git_command)
+    command = Enum.join [git | cmd], " "
+    IO.puts "Running: " <> command
+    System.cmd(command)
   end
   
   # githup reply:
