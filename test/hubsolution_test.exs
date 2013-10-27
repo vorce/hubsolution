@@ -23,7 +23,9 @@ defmodule HubsolutionTest do
     File.rm_rf("hubsolution_repos")
   end
 
-  # Note! This test requires an internet connection where you can
+  # Note! Many of these tests are not unit tests, but rather
+  # integration tests.
+  # This test requires an internet connection where you can
   # access https://api.github.com/users/test/repos
   test "Should be able to list user's repositories" do
     reply = Hubsolution.repos("test")

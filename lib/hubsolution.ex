@@ -1,7 +1,5 @@
 defmodule Hubsolution do
   use HTTPotion.Base
-  #Application.Behavior
-  # http://elixir-lang.org/docs/stable/Application.Behaviour.html
 
   @root_dir "hubsolution_repos" # change me
 
@@ -34,7 +32,7 @@ defmodule Hubsolution do
   end
 
   def process_response_body(body) do
-    to_string(body) |> JSEX.decode |> elem 1
+    to_string(body) |> JSON.decode |> elem 1
   end
 
   @doc """

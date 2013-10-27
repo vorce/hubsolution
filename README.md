@@ -18,10 +18,9 @@ By default Hubsolution does not include forks.
 ## Depends on
 
 - HTTPotion: https://github.com/myfreeweb/httpotion.git
-- Jsex: https://github.com/talentdeficit/jsex.git
+- Elixir-json: https://github.com/cblage/elixir-json
 
 ## TODO
 
 - Add config
-- Instead of Jsex, use https://github.com/cblage/elixir-json
 
