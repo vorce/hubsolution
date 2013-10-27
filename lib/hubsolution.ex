@@ -109,7 +109,7 @@ defmodule Hubsolution do
 
   defp do_parallel_backup(repo, parent_pid) do
     spawn_link(fn ->
-      Path.join([@root_dir, repo.owner, repo.name]) |> do_backup repo.ssh_url 
+      Path.join([@root_dir, repo.owner, repo.name]) |> do_backup repo
       parent_pid <- { binary_to_atom(repo.name), :ok }
     end)
   end
