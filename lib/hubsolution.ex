@@ -39,7 +39,8 @@ defmodule Hubsolution do
   Returns a list of Repo records from the raw github data
   """
   def repos(user) do
-    Enum.map(get("/users/" <> user <> "/repos").body,
+    options = [{:timeout, 10000}]
+    Enum.map(get("/users/" <> user <> "/repos", [], options).body,
               &string_to_atom(&1))
     |>
     Enum.map &raw_to_repo(&1)
