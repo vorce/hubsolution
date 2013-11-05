@@ -22,5 +22,5 @@ By default Hubsolution does not include forks.
 
 ## TODO
 
-- Add config
+- Add config (https://github.com/yrashk/exconfig)
 
