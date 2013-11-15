@@ -4,7 +4,6 @@ defmodule Hubsolution.Mixfile do
   def project do
     [ app: :hubsolution,
       version: "0.0.1",
-      elixir: "~> 0.10.1",
       deps: deps ]
   end
 
