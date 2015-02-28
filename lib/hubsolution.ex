@@ -1,9 +1,10 @@
 defmodule Hubsolution do
   use HTTPotion.Base
+  require Record
 
   @root_dir "hubsolution_repos" # change me
 
-  defrecord Repo,
+  Record.defrecord :repo,
     owner: "",
     name: "",
     description: "",
@@ -40,14 +41,14 @@ defmodule Hubsolution do
   """
   def repos(user) do
     options = [{:timeout, 10000}]
-    Enum.map(get("/users/" <> user <> "/repos", [], options).body,
+    Enum.map(get("/users/" <> user <> "/repos", options).body,
               &string_to_atom(&1))
     |>
     Enum.map &raw_to_repo(&1)
   end
 
   defp string_to_atom(contents) do
-    Enum.map contents, fn({k, v}) -> {binary_to_atom(k), v} end
+    Enum.map contents, fn({k, v}) -> {String.to_atom(k), v} end
   end
 
   def raw_to_repo(raw) do
@@ -111,7 +112,7 @@ defmodule Hubsolution do
   defp do_parallel_backup(repo, parent_pid) do
     spawn_link(fn ->
       Path.join([@root_dir, repo.owner, repo.name]) |> do_backup repo
-      parent_pid <- { binary_to_atom(repo.name), :ok }
+      send parent_pid, { String.to_atom(repo.name), :ok }
     end)
   end
 
