@@ -1,17 +1,7 @@
 defmodule Hubsolution do
   use HTTPotion.Base
-  require Record
 
   @root_dir "hubsolution_repos" # change me
-
-  Record.defrecord :repo,
-    owner: "",
-    name: "",
-    description: "",
-    ssh_url: "",
-    url: "",
-    updated_at: nil,
-    fork: false
 
   @github_api_url "https://api.github.com"
   @github_owner_tag "login"
@@ -40,26 +30,25 @@ defmodule Hubsolution do
   Returns a list of Repo records from the raw github data
   """
   def repos(user) do
-    options = [{:timeout, 10000}]
+    options = [headers: ["User-Agent": "Hubsolution"]]
     Enum.map(get("/users/" <> user <> "/repos", options).body,
-              &string_to_atom(&1))
-    |>
-    Enum.map &raw_to_repo(&1)
+              &keys_to_atoms(&1))
+    |> Enum.map &raw_to_repo(&1)
   end
 
-  defp string_to_atom(contents) do
+  defp keys_to_atoms(contents) do
     Enum.map contents, fn({k, v}) -> {String.to_atom(k), v} end
   end
 
   def raw_to_repo(raw) do
     owner = extract_owner_name(raw[:owner])
-    Repo[owner: owner, name: raw[:name], description: raw[:description],
+    %Repo{owner: owner, name: raw[:name], description: raw[:description],
           ssh_url: raw[:ssh_url], url: raw[:html_url],
-          updated_at: raw[:updated_at], fork: raw[:fork]]
+          updated_at: raw[:updated_at], fork: raw[:fork]}
   end
 
   def extract_owner_name(raw) do
-    Enum.find(raw, fn({k, _}) -> k == @github_owner_tag end) |> elem 1
+    raw[@github_owner_tag]
   end
 
   def list_user_repos(user) do
@@ -98,7 +87,7 @@ defmodule Hubsolution do
     git = System.find_executable(@git_command)
     command = Enum.join [git | cmd], " "
     IO.puts "Running: [" <> command <> "] in: " <> File.cwd!
-    System.cmd(command)
+    System.cmd(git, cmd)
   end
 
   def is_fork?(repo), do: repo.fork
